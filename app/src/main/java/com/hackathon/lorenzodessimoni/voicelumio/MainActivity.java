@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String IP = "http://10.17.2.9";
     private static final String TAG = "MainActivity";
+
     private Socket mSocket;
     {
         try {

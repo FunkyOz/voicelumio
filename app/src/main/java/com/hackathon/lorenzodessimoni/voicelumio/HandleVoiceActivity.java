@@ -19,9 +19,7 @@ import java.net.URISyntaxException;
 public class HandleVoiceActivity extends Activity {
     private static final String IP = "http://10.17.2.9";
     private static String TAG = HandleVoiceActivity.class.getSimpleName();
-
     private Socket mSocket;
-
     {
         try {
             mSocket = IO.socket(IP);
@@ -33,41 +31,37 @@ public class HandleVoiceActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mSocket.on("pushBrowseLibrary", search);
         mSocket.on("pushState", addPlay);
         mSocket.connect();
         Log.d(TAG, "Creo socket");
-
-        //receive query from intent
         String search = getIntent().getStringExtra(SearchManager.QUERY);
         makeRequest(search);
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mSocket.off("search");
+        mSocket.off("addPlay");
         mSocket.disconnect();
     }
 
     //-------------METHODS
 
     private void makeRequest(String query) {
-
         JSONObject jsonObject = null;
         try {
+            mSocket.emit("clearQueue", new JSONObject("{\"value\": \"spop\"}"));
             jsonObject = new JSONObject("{\"value\":\"" + query + "\"}");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         Log.d(TAG, "Creo richiesta: " + query);
         mSocket.emit("search", jsonObject);
     }
 
     private void parseSearchResponse(JSONObject response) {
-
         try {
             JSONObject navigation = (JSONObject) response.get("navigation");
             //Lists of plugins
@@ -86,25 +80,23 @@ public class HandleVoiceActivity extends Activity {
                 else if (plugin.getString("title").toLowerCase().contains("youtube"))
                     youtubePlugin = plugin;
             }
-            JSONArray audioList = null;
+            JSONArray audioList;
             if (localPlugin != null) {               // Se ci sono risultati locali
                 audioList = (JSONArray) localPlugin.get("items");
             } else if (youtubePlugin != null ){      // Seconda scelta ci sono youtube
                 audioList = (JSONArray) youtubePlugin.get("items");
             }else {                                  // Altrimenti prendo il primo plugin a caso
-                audioList = (JSONArray)  ((JSONObject)lists.get(0)).get("items");
+                audioList = (JSONArray) ((JSONObject)lists.get(0)).get("items");
             }
             //Prendo il primo audio nella lista
             JSONObject audioSelected = (JSONObject) audioList.get(0);
             AudioItem audioItem = AudioItem.parse(audioSelected);
-
             //TODO HERE REFRESH LAYOUT ON APP
-
-            JSONObject uriObject = new JSONObject("{\"uri\":\"" + audioItem.uri + "\"}");
-
-            Log.d(TAG, "Aggiungo a coda");
-
+            JSONObject uriObject = new JSONObject("{\"uri\":\"" + audioItem.uri + "\", \"service\":\"" + audioItem.service + "\"}");
             mSocket.emit("addPlay", uriObject);
+            mSocket.off("search");
+            mSocket.off("addPlay");
+            mSocket.disconnect();
         } catch (JSONException e) {
             e.printStackTrace();
         }

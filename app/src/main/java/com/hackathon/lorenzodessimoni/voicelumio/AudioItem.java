@@ -1,7 +1,5 @@
 package com.hackathon.lorenzodessimoni.voicelumio;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

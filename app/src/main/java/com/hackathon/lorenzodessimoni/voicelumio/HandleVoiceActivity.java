@@ -82,8 +82,10 @@ public class HandleVoiceActivity extends Activity {
 
             //loop to find local plugin or youtube
             for (int i = 0; i < howmanyPlugins; i++) {
-                JSONObject plugin = (JSONObject) lists.get(0);
-                if (plugin.getString("title").contains("youtube")) //todo change to local not youtube
+
+                JSONObject plugin = (JSONObject) lists.get(i);
+
+                if (plugin.getString("title").contains("mpd"))
                     localPlugin = plugin;
                 else if (plugin.getString("title").contains("youtube"))
                     youtubePlugin = plugin;

@@ -20,13 +20,36 @@ public class AudioItem {
     public static AudioItem parse(JSONObject json){
         AudioItem audio = new AudioItem();
         try {
-            Log.d("AudioItem", json.getString("album"));
             audio.service = json.getString("service");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.type = json.getString("type");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.artist = json.getString("artist");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.title = json.getString("title");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.album = json.getString("album");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.uri = json.getString("uri");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
             audio.albumart = json.getString("albumart");
         } catch (JSONException e) {
             e.printStackTrace();

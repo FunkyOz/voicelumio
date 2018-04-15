@@ -2,9 +2,9 @@ package com.hackathon.lorenzodessimoni.voicelumio;
 
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -37,7 +37,7 @@ public class HandleVoiceActivity extends Activity {
         mSocket.on("pushBrowseLibrary", search);
         mSocket.on("pushState", addPlay);
         mSocket.connect();
-        Log.e(TAG, "Creo socket");
+        Log.d(TAG, "Creo socket");
 
         //receive query from intent
         String search = getIntent().getStringExtra(SearchManager.QUERY);
@@ -62,7 +62,7 @@ public class HandleVoiceActivity extends Activity {
             e.printStackTrace();
         }
 
-        Log.e(TAG, "Creo richiesta: " + query);
+        Log.d(TAG, "Creo richiesta: " + query);
         mSocket.emit("search", jsonObject);
     }
 
@@ -70,29 +70,23 @@ public class HandleVoiceActivity extends Activity {
 
         try {
             JSONObject navigation = (JSONObject) response.get("navigation");
-
             //Lists of plugins
             JSONArray lists = (JSONArray) navigation.get("lists");
-
-            //Plugin Length
-            int howmanyPlugins = lists.length();
-
+            int howManyPlugins = lists.length();
+            if(howManyPlugins <= 0) {
+                Toast.makeText(this, "No audio found!", Toast.LENGTH_LONG).show();
+                return;
+            }
             JSONObject localPlugin = null;
             JSONObject youtubePlugin = null;
-
-            //loop to find local plugin or youtube
-            for (int i = 0; i < howmanyPlugins; i++) {
-
+            for (int i = 0; i < howManyPlugins; i++) {
                 JSONObject plugin = (JSONObject) lists.get(i);
-
                 if (plugin.getString("title").contains("mpd"))
                     localPlugin = plugin;
                 else if (plugin.getString("title").contains("youtube"))
                     youtubePlugin = plugin;
             }
-
             JSONArray audioList = null;
-
             if (localPlugin != null) {               // Se ci sono risultati locali
                 audioList = (JSONArray) localPlugin.get("items");
             } else if (youtubePlugin != null ){      // Seconda scelta ci sono youtube
@@ -100,17 +94,15 @@ public class HandleVoiceActivity extends Activity {
             }else {                                  // Altrimenti prendo il primo plugin a caso
                 audioList = (JSONArray)  ((JSONObject)lists.get(0)).get("items");
             }
-
             //Prendo il primo audio nella lista
             JSONObject audioSelected = (JSONObject) audioList.get(0);
-
             AudioItem audioItem = AudioItem.parse(audioSelected);
 
             //TODO HERE REFRESH LAYOUT ON APP
 
             JSONObject uriObject = new JSONObject("{\"uri\":\"" + audioItem.uri + "\"}");
 
-            Log.e(TAG, "Aggiungo a coda");
+            Log.d(TAG, "Aggiungo a coda");
 
             mSocket.emit("addPlay", uriObject);
         } catch (JSONException e) {
@@ -127,7 +119,7 @@ public class HandleVoiceActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "Ricevo risposta evento search");
+                    Log.d(TAG, "Ricevo risposta evento search");
                     parseSearchResponse((JSONObject) args[0]);
                 }
             });
@@ -140,7 +132,7 @@ public class HandleVoiceActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "Ricevo risposta evento addPlay");
+                    Log.d(TAG, "Ricevo risposta evento addPlay");
                     JSONObject response = (JSONObject) args[0];
                 }
             });

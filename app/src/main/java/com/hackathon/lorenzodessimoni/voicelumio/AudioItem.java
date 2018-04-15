@@ -1,5 +1,7 @@
 package com.hackathon.lorenzodessimoni.voicelumio;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ public class AudioItem {
     public static AudioItem parse(JSONObject json){
         AudioItem audio = new AudioItem();
         try {
+            Log.d("AudioItem", json.getString("album"));
             audio.service = json.getString("service");
             audio.type = json.getString("type");
             audio.artist = json.getString("artist");
@@ -25,7 +28,6 @@ public class AudioItem {
             audio.album = json.getString("album");
             audio.uri = json.getString("uri");
             audio.albumart = json.getString("albumart");
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

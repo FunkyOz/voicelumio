@@ -4,5 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".HandleVoiceActivity"
+    android:background="@drawable/splash">
+
+    <ImageView
+        android:id="@+id/splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/splash"
+        android:contentDescription="splashImage"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/songTitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="30sp" />
+
 </android.support.constraint.ConstraintLayout>

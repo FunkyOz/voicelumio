@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
@@ -17,8 +18,10 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 
 public class HandleVoiceActivity extends Activity {
+
     private static final String IP = "http://10.17.2.9";
     private static String TAG = HandleVoiceActivity.class.getSimpleName();
+    private TextView songTitle;
     private Socket mSocket;
     {
         try {
@@ -31,10 +34,15 @@ public class HandleVoiceActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // songTitle = findViewById(R.id.songTitle);
         mSocket.on("pushBrowseLibrary", search);
         mSocket.on("pushState", addPlay);
         mSocket.connect();
+
         Log.d(TAG, "Creo socket");
+
         String search = getIntent().getStringExtra(SearchManager.QUERY);
         makeRequest(search);
     }
@@ -91,6 +99,7 @@ public class HandleVoiceActivity extends Activity {
             //Prendo il primo audio nella lista
             JSONObject audioSelected = (JSONObject) audioList.get(0);
             AudioItem audioItem = AudioItem.parse(audioSelected);
+            // songTitle.setText(audioItem.title);
             //TODO HERE REFRESH LAYOUT ON APP
             JSONObject uriObject = new JSONObject("{\"uri\":\"" + audioItem.uri + "\", \"service\":\"" + audioItem.service + "\"}");
             mSocket.emit("addPlay", uriObject);

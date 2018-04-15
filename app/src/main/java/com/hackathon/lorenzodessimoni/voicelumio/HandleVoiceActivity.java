@@ -81,9 +81,9 @@ public class HandleVoiceActivity extends Activity {
             JSONObject youtubePlugin = null;
             for (int i = 0; i < howManyPlugins; i++) {
                 JSONObject plugin = (JSONObject) lists.get(i);
-                if (plugin.getString("title").contains("mpd"))
+                if (plugin.getString("title").toLowerCase().contains("found"))
                     localPlugin = plugin;
-                else if (plugin.getString("title").contains("youtube"))
+                else if (plugin.getString("title").toLowerCase().contains("youtube"))
                     youtubePlugin = plugin;
             }
             JSONArray audioList = null;
